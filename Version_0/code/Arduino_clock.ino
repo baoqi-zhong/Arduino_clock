@@ -1,6 +1,5 @@
 /*
-  这个是针对4个独立数码管的程序
-
+  Version0 四个独立数码管
   time:2021.7.20-2021.7.23
 
 */
@@ -8,7 +7,6 @@
 // 每一位拉低有效
 // 第一位在左边
 
-// define 没有等号 没有;
 
 // DS1302 settings
 #define CLK 10
@@ -156,10 +154,9 @@ void update_now_time()
 {
   unsigned int time_data;
 
-  // 这一堆东西一定要括起来，不然会加到15就清零
   time_data = read_1302(0x85); // hour
   //                            31是mask(11111)
-  now_time[0] = time_data & 31;
+  now_time[0] = (time_data >> 4 & 7) * 10 + (time_data & 15);
 
   time_data = read_1302(0x83); // min
   //                   提取前4位        7是mask(0111)
@@ -168,7 +165,7 @@ void update_now_time()
 
 void set_now_time()
 {
-  write_1302(0x84, now_time[0]); // hour
+  write_1302(0x84, (now_time[0] / 10 << 4) + now_time[0] % 10); // hour
   write_1302(0x82, (now_time[1] / 10 << 4) + now_time[1] % 10); // min
 }
 
